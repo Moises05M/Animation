@@ -21,6 +21,6 @@ public:
     ~Animation();
 
     // Functions
-    void update(int row, float deltaTime, bool faceRight);
+    void update(int row, float deltaTime, bool faceRight, int frameCount = 0);
 
 };

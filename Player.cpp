@@ -10,12 +10,13 @@ void Player::initTexture() {
 
 void Player::initSprite() {
     this->sprite.setTexture(this->texture);
+    this->sprite.setScale(2.f, 2.f);
 }
 
 void Player::initAnimation() {
-    // el spriteSheet tiene 12 frames en horizontal y 11 en vertical
+    // el spriteSheet tiene 10 frames en horizontal y 11 en vertical
     this->animation = new Animation(&this->texture, sf::Vector2u(10, 11), 0.05f);
-    this->faceRight = false;
+    this->faceRight = true;
     this->row = 0;
 }
 
@@ -40,24 +41,28 @@ void Player::update(float deltaTime) {
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
         movement.x -= this->speed * deltaTime;
-        this->faceRight = true;
+        this->faceRight = false;
     }
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
         movement.x += this->speed * deltaTime;
-        this->faceRight = false;
+        this->faceRight = true;
     }
+
+    int currentFrames = 0; // variable para guardar cuantos frames usaremos
 
     // selección de animación (Row)
     if (movement.x == 0.0f) {
         this->row = 0; // IDLE
+        currentFrames = 6; // Idle solo usa 6 cuadros
     } else {
         this->row = 1; // WALK
+        currentFrames = 8; // correr usa 8 cuadros
     }
 
-    // ctualizar animación y aplicar al sprite
-    this->animation->update(this->row, deltaTime, this->faceRight);
-    this->sprite.setTextureRect(this->animation->uvRect);
+    // actualizar animación y aplicar al sprite
+    this->animation->update(this->row, deltaTime, this->faceRight, currentFrames);
 
+    this->sprite.setTextureRect(this->animation->uvRect);
     this->sprite.move(movement);
 }
 

@@ -42,7 +42,7 @@ void Game::runGame() {
 }
 
 void Game::render() {
-    this->window->clear(sf::Color(0, 0, 0, 255));
+    this->window->clear(sf::Color(20,20,20));
 
     this->player->render(*this->window);
 

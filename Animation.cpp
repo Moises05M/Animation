@@ -17,7 +17,7 @@ Animation::Animation(sf::Texture *_texture, sf::Vector2u _imageCount, float _swi
 Animation::~Animation() {
 }
 
-void Animation::update(int row, float deltaTime, bool faceRight) {
+void Animation::update(int row, float deltaTime, bool faceRight, int frameCount) {
     this->currentImage.y = row; // Fila donde se encuentran los frames de la animación.
     this->totalTime += deltaTime;
 
@@ -26,8 +26,17 @@ void Animation::update(int row, float deltaTime, bool faceRight) {
         this->totalTime -= this->switchTime; // reiniciar el totalTime
         this->currentImage.x++; // pasar al siguiente frame (columna)
 
-        // verificar si ya he llegado al limite de los frames que conforman la animación para volver a empezar
-        if (this->currentImage.x == this->imageCount.x) {
+        // limites de frames en la fila
+        unsigned int limit = this->imageCount.x;
+
+        // cuál es el límite de frames para esta fila
+        // verificar si ya ha llegado al limite de los frames que conforman la animación para volver a empezar
+        if (frameCount > 0) {
+            limit = frameCount; // si nos pasan un número usaremos ese
+        }
+
+        // verificar si llegamos a ESE límite específico
+        if (this->currentImage.x >= limit) {
             this->currentImage.x = 0;
         }
     }
