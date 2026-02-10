@@ -10,7 +10,7 @@ void Player::initTexture() {
 
 void Player::initSprite() {
     this->sprite.setTexture(this->texture);
-    this->sprite.setScale(2.f, 2.f);
+    this->sprite.setScale(3.0f, 3.0f);
 }
 
 void Player::initAnimation() {
@@ -24,7 +24,7 @@ void Player::initVariables() {
     this->movement = sf::Vector2f(0.f, 0.f);
     this->speed = 200.f;
     this->gravity = 1000.f;
-    this->jumpHeight = 400.f;
+    this->jumpHeight = 500.f;
     this->acceleration = 80.f;
     this->drag = 0.85f;
     this->maxSpeed = 500.f;
@@ -108,7 +108,17 @@ void Player::updateAnimation(float &deltaTime) {
     int currentFrames = 0; // variable para guardar cuantos frames usaremos
 
     // selección de animación (Row)
-    if (movement.x == 0.0f) {
+    if (!isOnFloor) {
+        if (this->movement.y < 0.f) {
+            this->row = 4; // JUMP
+            currentFrames = 6;
+        }
+        else {
+            this->row = 5; // FALL
+            currentFrames = 6;
+        }
+    }
+    else if (movement.x == 0.0f) {
         this->row = 0; // IDLE
         currentFrames = 6; // Idle solo usa 6 cuadros
     } else {
