@@ -21,7 +21,14 @@ void Player::initAnimation() {
 }
 
 void Player::initVariables() {
+    this->movement = sf::Vector2f(0.f, 0.f);
     this->speed = 200.f;
+    this->gravity = 1000.f;
+    this->jumpHeight = 400.f;
+    this->acceleration = 80.f;
+    this->drag = 0.85f;
+    this->maxSpeed = 500.f;
+    this->isOnFloor = false;
 }
 
 // Constructor & destructor
@@ -36,18 +43,68 @@ Player::~Player() {
     delete this->animation;
 }
 
-void Player::update(float deltaTime) {
-    sf::Vector2f movement(0.0f, 0.0f);
+// Accessor
+const sf::FloatRect Player::getGlobalBounds() const{
+    return this->sprite.getGlobalBounds();
+}
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        movement.x -= this->speed * deltaTime;
-        this->faceRight = false;
-    }
-    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        movement.x += this->speed * deltaTime;
+const sf::Vector2f Player::getPosition() const {
+    return this->sprite.getPosition();
+}
+
+// Modifier
+void Player::resetVelocityY() {
+    this->movement.y = 0.f;
+}
+
+void Player::setPosition(const float x, const float y) {
+    this->sprite.setPosition(x, y);
+}
+
+void Player::setOnGround(bool onFloor) {
+    this->isOnFloor = onFloor;
+}
+
+// Functions
+void Player::move(const float dir_x, const float dir_y) {
+    this->movement.x += this->acceleration * dir_x;
+
+    // flip sprite
+    if (dir_x > 0.f) {
         this->faceRight = true;
     }
+    else if (dir_x < 0.f){
+        this->faceRight = false;
+    }
 
+    // limitiar el movimiento a la velocidad minima
+    if (std::abs(this->movement.x) > this->maxSpeed) {
+        this->movement.x = this->maxSpeed * ((this->movement.x < 0.f) ? -1.f : 1.f);
+    }
+}
+
+void Player::jump() {
+    if (isOnFloor) {
+        isOnFloor = false;
+        this->movement.y = -this->jumpHeight;
+    }
+}
+
+void Player::updatePhysics(float& deltaTime) {
+    // aplicar gravedad
+    this->movement.y += this->gravity * deltaTime;
+
+    // fricción
+    this->movement.x *= this->drag;
+
+    // eliminar eliminar el movimiento diminuto a 0.
+    if (std::abs(this->movement.x) < 1.0f) this->movement.x = 0.f;
+
+    // movimiento
+    this->sprite.move(this->movement * deltaTime);
+}
+
+void Player::updateAnimation(float &deltaTime) {
     int currentFrames = 0; // variable para guardar cuantos frames usaremos
 
     // selección de animación (Row)
@@ -63,11 +120,14 @@ void Player::update(float deltaTime) {
     this->animation->update(this->row, deltaTime, this->faceRight, currentFrames);
 
     this->sprite.setTextureRect(this->animation->uvRect);
-    this->sprite.move(movement);
+}
+
+void Player::update(float& deltaTime) {
+    this->updatePhysics(deltaTime);
+    this->updateAnimation(deltaTime);
 }
 
 // Functions
 void Player::render(sf::RenderTarget &target) {
     target.draw(this->sprite);
 }
-

@@ -13,7 +13,15 @@ private:
     bool faceRight;
 
     // Physics
+    sf::Vector2f movement;
     float speed;
+    float gravity;
+    float jumpHeight;
+
+    float acceleration;
+    float drag;
+    float maxSpeed;
+    bool isOnFloor;
 
     // Private functions
     void initTexture();
@@ -26,7 +34,20 @@ public:
     Player();
     ~Player();
 
+    // Accessor
+    const sf::FloatRect getGlobalBounds() const;
+    const sf::Vector2f getPosition() const;
+
+    // Modifier
+    void resetVelocityY();
+    void setPosition(const float x, const float y);
+    void setOnGround(bool onFloor);
+
     // Functions
-    void update(float delta);
+    void move(const float dir_x, const float dir_y);
+    void jump();
+    void updatePhysics(float& deltaTime);
+    void updateAnimation(float& deltaTime);
+    void update(float &delta);
     void render(sf::RenderTarget& target);
 };

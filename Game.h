@@ -13,9 +13,13 @@ private:
     // Player
     Player* player;
 
+    // Platform
+    sf::RectangleShape platform;
+
     // Private functions
     void initWindow();
     void initPLayer();
+    void initPlatform();
 
 public:
     // Constructor & destructor
@@ -24,6 +28,8 @@ public:
 
     // Functions
     void updatePollEvents();
+    void updateInput();
+    void updateCollsion();
     void update();
     void runGame();
     void render();
